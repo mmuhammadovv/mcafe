@@ -269,3 +269,19 @@ def reserve_table(request):
         'bookings':bookings,
     }
     return render(request, 'reserve_table.html', context)
+
+
+
+def contact(request):
+    if request.method=='POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')   
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        myquery = Contact(name=name, subject=subject, email=email, message=message)
+        myquery.save()
+        messages.info(request, 'Мы скоро ответим вам ! ')
+        return redirect('/')
+    
+    return render(request, 'contact.html')
+

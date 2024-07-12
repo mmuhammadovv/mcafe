@@ -63,23 +63,6 @@ class Booking(models.Model):
     def __str__(self):
         return f"{self.user} booked {self.table} from {self.booking_start} to {self.booking_end}"
     
-class Team(models.Model):
-    name = models.CharField(max_length=50)
-    image = models.ImageField(upload_to='images')
-    description = models.TextField()
-    expirience = models.TextField()
-
-
-    def save(self, *args, **kwargs):
-        super(Team, self).save(*args, **kwargs) 
-
-
-    def __str__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name = 'Team'
-        verbose_name_plural = 'Teams'
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -130,19 +113,8 @@ class OrderItem(models.Model):
 
 
 class Contact(models.Model):
-    name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=50)
-    phone = models.CharField(max_length=50)
-    subject = models.CharField(max_length=50)
+
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    subject = models.TextField()
     message = models.TextField()
-
-
-    def __str__(self):
-        return self.name
-    
-
-    class Meta:
-        verbose_name = 'Contact'
-        verbose_name_plural = 'Contacts'
-
-

@@ -53,6 +53,9 @@
 
             <div class="container-xxl py-5 bg-dark hero-header mb-5">
                 <div class="container text-center my-5 pt-5 pb-4">
+                    {% for message in messages %}
+                    <p style="font-size: 20px; color: #FEA116;" >{{message}}</p>
+                    {% endfor %}
                     <h1 class="display-3 text-white mb-3 animated slideInDown">Cart</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center text-uppercase">
