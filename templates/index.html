@@ -44,6 +44,7 @@
                     <div class="navbar-nav ms-auto py-0 pe-4">
                         <a href="{% url 'home' %}" class="nav-item nav-link active">Home</a>
                         <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
+                        <a href="{% url 'team' %}" class="nav-item nav-link">Team</a>
                         <a href="{% url 'menu' %}" class="nav-item nav-link">Menu</a>
                         <a href="{% url 'cart' %}" class="nav-item nav-link">Cart</a>
                         <a href="{% url 'dashboard' %}" class="nav-item nav-link">Dashboard</a>
@@ -169,6 +170,36 @@
             </div>
         </div>
         <!-- About End -->
+
+
+         <!-- Team Start -->
+         <div class="container-xxl pt-5 pb-3">
+            <div class="container">
+                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                    <h5 class="section-title ff-secondary text-center text-primary fw-normal">Team Members</h5>
+                    <h1 class="mb-5">Our Master Chefs</h1>
+                </div>
+                <div class="row g-4">
+                    {% for team in teams|slice:4 %}
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="team-item text-center rounded overflow-hidden">
+                            <div class="rounded-circle overflow-hidden m-4">
+                                <img class="img-fluid" src="{{team.img.url}}" alt="">
+                            </div>
+                            <h5 class="mb-0">{{team.name}}</h5>
+                            <small>{{team.exprience}} years </small>
+                            <div class="d-flex justify-content-center mt-3">
+                                <a class="btn btn-square btn-primary mx-1" href="https://www.facebook.com/{{team.social_nicknam}}"><i class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-square btn-primary mx-1" href="https://x.com/{{team.social_nicknam}}"><i class="fab fa-twitter"></i></a>
+                                <a class="btn btn-square btn-primary mx-1" href="https://www.instagram.com/{{team.social_nicknam}}"><i class="fab fa-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- Team End -->
 
 
         <!-- Contact Start -->

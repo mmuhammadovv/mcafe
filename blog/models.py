@@ -118,3 +118,16 @@ class Contact(models.Model):
     email = models.EmailField()
     subject = models.TextField()
     message = models.TextField()
+    
+    def __str__(self) -> str:
+        return self.name
+
+class Team(models.Model):
+    img = models.ImageField(upload_to='team')
+    name = models.CharField(max_length=255)
+    exprience = models.IntegerField()
+    social_nicknam = models.CharField(max_length=50)
+
+
+    def __str__(self) -> str:
+        return self.name

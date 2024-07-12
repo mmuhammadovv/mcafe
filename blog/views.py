@@ -17,8 +17,17 @@ from django.utils import timezone
 
 
 def index(request):
-    return render(request, 'index.html')
+    teams = Team.objects.all()
 
+    return render(request, 'index.html', {"teams":teams})
+
+
+
+def team(request):
+    teams = Team.objects.all()
+
+
+    return render(request, 'team.html', {'teams':teams})    
 
 
 def signup(request):

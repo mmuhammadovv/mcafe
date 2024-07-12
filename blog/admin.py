@@ -10,5 +10,6 @@ admin.site.register(OrderItem)
 admin.site.register(Table)
 admin.site.register(Booking)
 admin.site.register(Contact)
+admin.site.register(Team)
 
 
