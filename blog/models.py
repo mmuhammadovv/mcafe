@@ -57,9 +57,6 @@ class Booking(models.Model):
     booking_start = models.DateTimeField()
     booking_end = models.DateTimeField()
 
-    class Meta:
-        unique_together = ('table', 'booking_start', 'booking_end')
-
     def __str__(self):
         return f"{self.user} booked {self.table} from {self.booking_start} to {self.booking_end}"
     

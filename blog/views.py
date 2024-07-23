@@ -11,6 +11,7 @@ from django.views.decorators.http import require_POST
 from django.db import IntegrityError
 from .forms import *
 from django.utils import timezone
+from datetime import datetime
 # Create your views here.
 
 
@@ -109,8 +110,9 @@ def food_detail(request, pk):
 
     return render(request, 'food_detail.html', context)
 
-@login_required(login_url='login')
 
+
+@login_required(login_url='login')
 def cart(request):
     if request.user.is_authenticated:
         customer = request.user
@@ -222,7 +224,6 @@ def checkout(request):
 
 
 @login_required(login_url='login')
-
 def dashboard(request):
 
     orders = Order.objects.filter(user=request.user)
@@ -236,21 +237,38 @@ def dashboard(request):
     return render(request, 'dashboard.html', context)
 
 
+def logoutfunction(request):
+    logout(request)
+    return redirect('home')
+
+
 @login_required(login_url='login')
 def reserve_table(request):
     if request.method == 'POST':
         table_id = request.POST.get('table_id')
         booking_start = request.POST.get('booking_start')
         booking_end = request.POST.get('booking_end')
+        
+        # Convert the input strings to datetime objects and make them timezone-aware
+        booking_start = timezone.make_aware(datetime.strptime(booking_start, "%Y-%m-%dT%H:%M"))
+        booking_end = timezone.make_aware(datetime.strptime(booking_end, "%Y-%m-%dT%H:%M"))
+        
+        # Ensure booking start and end are not in the past
+        now = timezone.now()
+        if booking_start < now or booking_end < now:
+            messages.error(request, 'Вы не можете забронировать столик на прошедшее время.')
+            return redirect('reserve')
+
         table = Table.objects.get(id=table_id)
 
-        existing_bookings = Booking.objects.filter(
+        # Check for overlapping bookings
+        overlapping_bookings = Booking.objects.filter(
             table=table,
             booking_start__lt=booking_end,
             booking_end__gt=booking_start
         )
-
-        if existing_bookings.exists():
+        
+        if overlapping_bookings.exists():
             messages.error(request, 'Этот столик уже забронирован на выбранное время.')
         else:
             booking = Booking(
@@ -261,7 +279,7 @@ def reserve_table(request):
             )
             booking.save()
             messages.success(request, 'Столик успешно забронирован.')
-            return redirect('reserve')
+        return redirect('reserve')
 
     tables = Table.objects.all()
     now = timezone.now()
@@ -275,9 +293,11 @@ def reserve_table(request):
     bookings = Booking.objects.all()
     context = {
         'tables': tables,
-        'bookings':bookings,
+        'bookings': bookings,
     }
     return render(request, 'reserve_table.html', context)
+
+
 
 
 

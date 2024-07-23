@@ -25,6 +25,21 @@
 
     <!-- Template Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            display: none;
+        }
+        .notification.success { background-color: green; }
+        .notification.error { background-color: red; }
+    </style>
 </head>
 
 <body>
@@ -46,7 +61,11 @@
                         <a href="{% url 'team' %}" class="nav-item nav-link">Team</a>
                         <a href="{% url 'menu' %}" class="nav-item nav-link">Menu</a>
                         <a href="{% url 'cart' %}" class="nav-item nav-link">Cart</a>
+                        {% if user.is_authenticated %}
                         <a href="{% url 'dashboard' %}" class="nav-item nav-link">Dashboard</a>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="nav-item nav-link">Login</a>
+                        {% endif %}
                     </div>
                 </div>
             </nav>
@@ -77,15 +96,15 @@
                 <div class="table">
                     <h1>№{{table.number}}</h1>
                     <h2><i class="fa-solid fa-users"></i> {{table.number_of_person}}</h2>
-                        <form action="{% url 'reserve' %}" method="post" style="display: flex;">
-                            {% csrf_token %}
-                            <input type="hidden" name="table_id" value="{{ table.id }}">
-                            <h1>From</h1>
-                            <input type="datetime-local" name="booking_start" required>
-                            <h1>To</h1>
-                            <input type="datetime-local" name="booking_end" required>
-                            <button type="submit" class="btn btn-primary py-1 px-5">Book</button>
-                        </form>
+                    <form action="{% url 'reserve' %}" method="post" style="display: flex;">
+                        {% csrf_token %}
+                        <input type="hidden" name="table_id" value="{{ table.id }}">
+                        <h1>From</h1>
+                        <input type="datetime-local" name="booking_start" required>
+                        <h1>To</h1>
+                        <input type="datetime-local" name="booking_end" required>
+                        <button type="submit" class="btn btn-primary py-1 px-5">Book</button>
+                    </form>
                 </div>
                 {% endfor %}
             </div>
@@ -149,7 +168,27 @@
 
         <!-- Template Javascript -->
         <script src="js/main.js"></script>
+
+
         
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                let now = new Date();
+                let year = now.getFullYear();
+                let month = (now.getMonth() + 1).toString().padStart(2, '0');
+                let day = now.getDate().toString().padStart(2, '0');
+                let hours = now.getHours().toString().padStart(2, '0');
+                let minutes = now.getMinutes().toString().padStart(2, '0');
+                let datetimeLocal = `${year}-${month}-${day}T${hours}:${minutes}`;
+                
+                document.querySelectorAll('input[type="datetime-local"]').forEach(input => {
+                    input.setAttribute('min', datetimeLocal);
+                });
+            });
+        </script>
+
+
+
     </div>
 
 

@@ -46,7 +46,11 @@
                         <a href="{% url 'team' %}" class="nav-item nav-link">Team</a>
                         <a href="{% url 'menu' %}" class="nav-item nav-link">Menu</a>
                         <a href="{% url 'cart' %}" class="nav-item nav-link">Cart</a>
+                        {% if user.is_authenticated %}
                         <a href="{% url 'dashboard' %}" class="nav-item nav-link">Dashboard</a>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="nav-item nav-link">Login</a>
+                        {% endif %}
                     </div>
                     <a href="{% url 'reserve' %}" class="btn btn-primary py-2 px-4">Book A Table</a>
                 </div>
@@ -93,7 +97,7 @@
                                 {% for food in foods %}
                                 <div class="col-lg-6">
                                     <div class="d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid rounded" src="{{food.image.url}}" alt="" style="width: 80px;">
+                                        <img class="flex-shrink-0 img-fluid rounded" src="{{food.image.url}}" style="border: 2px solid #FEA116; width: 80px;" alt="" style="width: 80px;">
                                         <div class="w-100 d-flex flex-column text-start ps-4">
                                             <h5 class="d-flex justify-content-between border-bottom pb-2">
                                                 <span><a href="{% url 'food_detail' food.id %}">{{food.name}}</a></span>

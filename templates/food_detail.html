@@ -47,7 +47,11 @@
                         <a href="{% url 'team' %}" class="nav-item nav-link">Team</a>
                         <a href="{% url 'menu' %}" class="nav-item nav-link">Menu</a>
                         <a href="{% url 'cart' %}" class="nav-item nav-link">Cart</a>
+                        {% if user.is_authenticated %}
                         <a href="{% url 'dashboard' %}" class="nav-item nav-link">Dashboard</a>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="nav-item nav-link">Login</a>
+                        {% endif %}
                     </div>
                     <a href="{% url 'reserve' %}" class="btn btn-primary py-2 px-4">Book A Table</a>
                 </div>
@@ -82,7 +86,12 @@
                     <h2>${{food.price}}</h2>
                     <p>{{food.description}}</p>
                     <p>{{food.ingredients}}</p>
-                    <button  data-product="{{ food.id }}" data-action="add"  class="btn btn-primary py-2 px-4 update-cart">Add to Cart</button>
+                    {% if user.is_authenticated %}
+                        <button  data-product="{{ food.id }}" data-action="add"  class="btn btn-primary py-2 px-4 update-cart">Add to Cart</button>
+                    {% else %}
+                        <p style="color: #FEA116; font-size: 20px;">Please Register or Login to Buy This Item</p>
+                        <button disabled  data-product="{{ food.id }}" data-action="add"  class="btn btn-primary py-2 px-4 update-cart">Add to Cart</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
