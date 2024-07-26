@@ -30,6 +30,9 @@
 
 <body>
     <div class="container-xxl bg-white p-0">
+        <div id="message-container" style="display: none; position: fixed; top: 25px; right: 10px; background-color: #13d505; color: white; padding: 10px; border-radius: 5px; z-index: 1000;">
+            <span id="message-text"></span>
+        </div>
 
         <!-- Navbar & Hero Start -->
         <div class="container-xxl position-relative p-0" id="navbar">
@@ -59,9 +62,7 @@
 
             <div class="container-xxl py-5 bg-dark hero-header mb-5">
                 <div class="container text-center my-5 pt-5 pb-4">
-                    {% for message in messages %}
-                    <p style="font-size: 20px; color: #FEA116;" >{{message}}</p>
-                    {% endfor %}
+                    
                     <h1 class="display-3 text-white mb-3 animated slideInDown">Contact</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center text-uppercase">
@@ -187,7 +188,24 @@
 
         <!-- Template Javascript -->
         <script src="js/main.js"></script>
-        
+        <script>
+            function showMessage(message) {
+                const messageContainer = document.getElementById('message-container');
+                const messageText = document.getElementById('message-text');
+                messageText.textContent = message;
+                messageContainer.style.display = 'block';
+
+                setTimeout(() => {
+                    messageContainer.style.display = 'none';
+                }, 5000); 
+            }
+
+            {% if messages %}
+                {% for message in messages %}
+                    showMessage("{{ message }}");
+                {% endfor %}
+            {% endif %}
+        </script>
     </div>
 
 

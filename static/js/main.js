@@ -116,6 +116,21 @@
     });
     
 })(jQuery);
+function showMessage(message) {
+    const messageContainer = document.getElementById('message-container');
+    const messageText = document.getElementById('message-text');
+    messageText.textContent = message;
+    messageContainer.style.display = 'block';
 
+    setTimeout(() => {
+        messageContainer.style.display = 'none';
+    }, 5000); 
+}
+
+{% if messages %}
+    {% for message in messages %}
+        showMessage("{{ message }}");
+    {% endfor %}
+{% endif %}
 
 

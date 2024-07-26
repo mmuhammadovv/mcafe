@@ -11,5 +11,7 @@ admin.site.register(Table)
 admin.site.register(Booking)
 admin.site.register(Contact)
 admin.site.register(Team)
+admin.site.register(Card)
+admin.site.register(Address)
 
 

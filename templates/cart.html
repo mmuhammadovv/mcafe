@@ -29,7 +29,9 @@
 
 <body>
     <div class="container-xxl bg-white p-0">
-
+        <div id="message-container" style="display: none; position: fixed; top: 25px; right: 10px; background-color: #13d505; color: white; padding: 10px; border-radius: 5px; z-index: 1000;">
+            <span id="message-text"></span>
+        </div>
         <!-- Navbar & Hero Start -->
         <div class="container-xxl position-relative p-0" id="navbar">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
@@ -58,9 +60,6 @@
 
             <div class="container-xxl py-5 bg-dark hero-header mb-5">
                 <div class="container text-center my-5 pt-5 pb-4">
-                    {% for message in messages %}
-                    <p style="font-size: 20px; color: #FEA116;" >{{message}}</p>
-                    {% endfor %}
                     <h1 class="display-3 text-white mb-3 animated slideInDown">Cart</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center text-uppercase">
@@ -98,7 +97,9 @@
                 <h1>Total Quantity - <span style="color: #FEA116;">{{total_quantity}}</span></h1>   
             </div>
             <a href="{% url 'menu' %}" class="btn btn-primary py-2 px-5" style="margin-right: 5px; margin-top: 30px;">Back to Menu</a>
+            {% if total_price > 0%}
             <a href="{% url 'checkout' %}" class="btn btn-primary py-2 px-5" style="background-color: #0F172B; margin-top: 30px;">Checkout</a>
+            {% endif %}
         </div>
 
 
@@ -161,6 +162,22 @@
         <script type="text/javascript">
             var user = "{{ request.user|default_if_none:'AnonymousUser' }}";
             var csrftoken = "{{ csrf_token }}";
+            function showMessage(message) {
+                const messageContainer = document.getElementById('message-container');
+                const messageText = document.getElementById('message-text');
+                messageText.textContent = message;
+                messageContainer.style.display = 'block';
+
+                setTimeout(() => {
+                    messageContainer.style.display = 'none';
+                }, 5000); 
+            }
+
+            {% if messages %}
+                {% for message in messages %}
+                    showMessage("{{ message }}");
+                {% endfor %}
+            {% endif %}
         </script>
         <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
         

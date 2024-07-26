@@ -4,14 +4,14 @@
 
 <head>
     <meta charset="utf-8">
-    <title>About Us</title>
+    <title>Order</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
 
     <!-- Favicon -->
     <link href="{% static 'img/favicon.ico' %}" rel="icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/brands.min.css" integrity="sha512-DJLNx+VLY4aEiEQFjiawXaiceujj5GA7lIY8CHCIGQCBPfsEG0nGz1edb4Jvw1LR7q031zS5PpPqFuPA8ihlRA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,7 +49,11 @@
                         <a href="{% url 'team' %}" class="nav-item nav-link">Team</a>
                         <a href="{% url 'menu' %}" class="nav-item nav-link">Menu</a>
                         <a href="{% url 'cart' %}" class="nav-item nav-link">Cart</a>
-                        <a href="{% url 'logout' %}" class="nav-item nav-link">Logout</a>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="nav-item nav-link">Dashboard</a>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="nav-item nav-link">Login</a>
+                        {% endif %}
                     </div>
                     <a href="{% url 'reserve' %}" class="btn btn-primary py-2 px-4">Book A Table</a>
                 </div>
@@ -58,11 +62,11 @@
             <div class="container-xxl py-5 bg-dark hero-header mb-5">
                 <div class="container text-center my-5 pt-5 pb-4">
                     
-                    <h1 class="display-3 text-white mb-3 animated slideInDown">Dashboard</h1>
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Order</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center text-uppercase">
                             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">Dashboard</li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Order</li>
                             
                         </ol>
                     </nav>
@@ -71,38 +75,51 @@
         </div>
         <!-- Navbar & Hero End -->
 
-        <div class="container">
-            <div class="dashboard">
-                <div class="user-info">
-                    <img src="{% static 'img/account.png' %}" alt="">
-                    <h1>{{user.first_name}}</h1>
-                    <a href="{% url 'cards' %}" class="btn btn-primary py-2 px-5" style="margin-bottom: 20px;">CARDS</a>
-                    <a href="{% url 'address' %}" class="btn btn-primary py-2 px-5" style="margin-bottom: 20px;">ADDRESS</a>
-                    <h2>Total Spent - <span>${{total_spent}}</span></h2>
-                </div>
-                <div class="user-orders">
-                    <h3>Orders</h3>
-                    <div class="orders" style="display: grid; grid-template-columns: 50% 50%; margin-top: 20px;">
 
-                    {% for order in orders %}
-                            <div class="order">
-                                <p>
-                                    {% if order.is_payed == True %}
-                                    <a href="{% url 'order_detail' order.id %}"><i class="fa-solid fa-eye" style="padding-right: 10px;"></i></a>
-                                    {% endif %}
-                                    {{order.ordered_on}}   </p>
-                                <p style="font-weight: 900;"><b>${{order.get_cart_total|floatformat:2}}</b></p>
-                                {% if order.is_payed == True %}
-                                    <p style="color: green;">Payed</p>
-                                {% else %}
-                                    <p style="color: rgb(209, 7, 7);">Not Payed</p>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
+        <div class="container">
+            <div class="checkout">
+                <div class="c-items">
+                    {% for item in items %}
+                    <div class="c-item">
+                        <div class="citem-img">
+                            <img src="{{item.product.image.url}}" alt="">
+                        </div>
+                        <div class="citem-text">
+                            <h1>{{item.product.name}}</h1>
+                            <h2>${{item.get_total|floatformat:2}}</h2>
+                            <p><b>{{item.quantity}}</b></p>
+                        </div>
                     </div>
+                    {% endfor %}
+                    
+                </div>
+                <div class="c-contact">
+                    <div><h1>Total Cost - <span style="color: #FEA116;">${{total_price|floatformat:2}}</span></h1>
+                    </div>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="col-md-11 mb-3">
+                            <div class="form-floating">
+                                <p style="font-size: 24px; margin-bottom: -5px;"><b>Card</b></p>
+                                <h6 style="font-size: 20px; margin-top: 5; color: #FEA116;">{{ order.card.card_number}}  - {{ order.card.owner_fullname }}</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-11 mb-3">
+                            <div class="form-floating">
+                                <p style="font-size: 24px; margin-bottom: -5px;"><b>Phone Number</b></p>
+                                <h6 style="font-size: 20px; margin-top: 5; color: #FEA116;" >+{{order.phone_number}}</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-11 mb-3">
+                            <div class="form-floating">
+                                <p style="font-size: 24px; margin-bottom: -5px;"><b>Address</b></p>
+                                <h6 style="font-size: 20px; margin-top: 5; color: #FEA116;">{{ order.address.city }}  - {{ order.address.region }} mik - {{order.address.apartment}} apartment</h6>
+                            </div>
+                        </div>
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary py-2 px-5" style="background-color: #0F172B;">Back to Dashboard</a>
+                    </form>
                 </div>
             </div>
-        
         </div>
 
 
@@ -113,7 +130,7 @@
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Company</h4>
                         <a class="btn btn-link" href="{% url 'about' %}">About Us</a>
-                        <a class="btn btn-link" href="{% url 'reserve' %}">Booking</a>
+                        <a class="btn btn-link" href="{% url 'reserve' %}">reserve</a>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
@@ -162,7 +179,10 @@
 
         <!-- Template Javascript -->
         <script src="js/main.js"></script>
-        <script>
+        <script type="text/javascript">
+            function validateCardNumber(input) {
+                input.value = input.value.replace(/\D/g, '');
+            }
             function showMessage(message) {
                 const messageContainer = document.getElementById('message-container');
                 const messageText = document.getElementById('message-text');

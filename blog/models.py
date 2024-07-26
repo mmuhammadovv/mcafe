@@ -60,12 +60,32 @@ class Booking(models.Model):
     def __str__(self):
         return f"{self.user} booked {self.table} from {self.booking_start} to {self.booking_end}"
     
+class Card(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    card_number = models.IntegerField(max_length=16)
+    owner_fullname = models.CharField(max_length=255)
+    cvv = models.IntegerField(max_length=3)
+    
+    def __str__(self):
+        return str(self.card_number)
+
+
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    city = models.CharField(max_length=255)
+    region = models.CharField(max_length=255)
+    apartment = models.CharField(max_length=255)
+
+
+    def __str__(self) -> str:
+        return self.city
+
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    card = models.CharField(max_length=16)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE, null=True, blank=True)
     phone_number = models.CharField(max_length=16)
-    address = models.CharField(max_length=255)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True)
     is_payed = models.BooleanField(default=False)
     invoice_id = models.CharField(max_length=50)
     ordered_on = models.DateTimeField(auto_now_add=True)

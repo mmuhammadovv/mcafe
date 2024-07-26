@@ -7,7 +7,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import json
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.db import IntegrityError
 from .forms import *
 from django.utils import timezone
@@ -179,29 +179,32 @@ def update_item(request):
 
 
 @login_required(login_url='login')
-
 def checkout(request):
-
     if request.user.is_authenticated:
         customer = request.user
-        order = Order.objects.filter(user=customer, is_payed=False)
-        items = [item for o in order for item in o.order_item.all()] 
+        order = Order.objects.filter(user=customer, is_payed=False).first()
+        items = order.order_item.all() if order else []
         total_price = sum(item.get_total for item in items)
         total_quantity = sum(item.quantity for item in items)
+        cards = Card.objects.filter(user=customer)
+        address = Address.objects.filter(user=customer)
+
         if request.method == 'POST':
             user = request.user
-            card = request.POST.get('card')
+            card_id = request.POST.get('card')
             phone_number = request.POST.get('phone_number')
-            address = request.POST.get('address')  
+            address_id = request.POST.get('address')
             
-            order = Order.objects.filter(user=user, is_payed=False,).first()
+            card = get_object_or_404(Card, id=card_id, user=user)
+            address = get_object_or_404(Address, id=address_id, user=user)
+            
             if order:
                 order.card = card
                 order.address = address
                 order.is_payed = True
                 order.phone_number = phone_number
                 order.save()
-                messages.info(request, 'Оплата сделан наши куреры скоро свяжутся с вами')
+                messages.info(request, 'Оплата сделан наши курьеры скоро свяжутся с вами')
                 return redirect('menu')
 
     else:
@@ -210,17 +213,111 @@ def checkout(request):
         total_quantity = 0
         total_price = 0
 
-
-
     context = {
         'items': items,
-        'order':order,
+        'order': order,
         'total_quantity': total_quantity,
         'total_price': total_price,
+        'cards': cards,
+        'address':address
     }
 
     return render(request, 'checkout.html', context)
 
+
+
+@login_required(login_url='login')
+def order_detail(request, pk):
+
+    order = Order.objects.get(pk=pk)
+    items = order.order_item.all() 
+    total_price = sum(item.get_total for item in items)
+    total_quantity = sum(item.quantity for item in items)
+
+    context = {
+        'items': items,
+        'order': order,
+        'total_quantity': total_quantity,
+        'total_price': total_price,
+    }
+
+
+    return render(request, 'order_detail.html', context)
+
+
+@login_required(login_url='login')
+def add_address(request):
+
+    if request.method == 'POST':
+        user = request.user
+        city = request.POST.get('city')
+        region = request.POST.get('region')
+        apartment = request.POST.get('apartment')
+        query = Address(user=user, city=city, region=region, apartment=apartment)
+        query.save()
+        messages.info(request, 'Адрес успешно добавлен')
+        return redirect('address')
+
+
+
+
+
+    return render(request, 'add_address.html', )
+
+
+@login_required(login_url='login')
+def address(request):
+
+    address = Address.objects.filter(user=request.user)
+
+    return render(request, 'address.html', {'address':address})
+
+
+
+@require_http_methods(["DELETE"])
+def delete_address(request, address_id):
+    address = Address.objects.filter(id=address_id, user=request.user).first()
+    if address:
+        address.delete()
+        return JsonResponse({'message': 'Адрес успешно удален.'}, status=200)
+
+
+@login_required(login_url='login')
+def add_card(request):
+
+    if request.method == 'POST':
+        user = request.user
+        card_number = request.POST.get('card_number')
+        owner_fullname = request.POST.get('owner_fullname')
+        cvv = request.POST.get('cvv')
+        query = Card(user=user, card_number=card_number, owner_fullname=owner_fullname, cvv=cvv)
+        query.save()
+        messages.info(request, 'Карта успешно добавлен')
+        return redirect('cards')
+
+
+
+    return render(request, 'add_card.html')
+
+
+@login_required(login_url='login')
+def cards(request):
+
+    cards = Card.objects.filter(user=request.user)
+
+    context = {
+        'cards':cards
+    }
+
+    return render(request,  'cards.html', context)
+
+
+@require_http_methods(["DELETE"])
+def delete_card(request, card_id):
+    card = Card.objects.filter(id=card_id, user=request.user).first()
+    if card:
+        card.delete()
+        return JsonResponse({'message': 'Карта успешно удалена.'}, status=200)
 
 
 @login_required(login_url='login')
